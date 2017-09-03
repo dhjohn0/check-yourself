@@ -34,16 +34,16 @@
     var newObj = {};
 
     if (Array.isArray(obj)) {
-      _.each(obj, (val, index) => {
+      _.each(obj, function (val, index) {
         var result = self.flatten(val, true);
         _.forOwn(result, (v, k) => {
           newObj[notFirst ? '.' + index + k : index + k] = v;
         });
       });
     }else if (typeof(obj) === 'object') {
-      _.forOwn(obj, (val, key) => {
+      _.forOwn(obj, function (val, key) {
         var result = self.flatten(val, true);
-        _.forOwn(result, (v, k) => {
+        _.forOwn(result, function (v, k) {
           newObj[notFirst ? '.' + key + k : key + k] = v;
         });
       });
@@ -85,10 +85,9 @@
     return !failed;
   }
 
-  CheckYourself.prototype.check = function (obj, checkGivenOnly) {
+  CheckYourself.prototype.check = function (obj, fullObj) {
     var self = this;
 
-    checkGivenOnly = !!checkGivenOnly;
     var checks = _.clone(self.options.fields);
 
     var list = self.flatten(obj);
@@ -115,11 +114,11 @@
 
       _.remove(checks, validator);
 
-      if (!self.runCheck(validator, val, key, obj, errors))
+      if (!self.runCheck(validator, val, key, fullObj ? fullObj : obj, errors))
         failed = true;
     });
 
-    if (!checkGivenOnly) {
+    if (!fullObj) {
       _.each(checks, function (validator) {
         if (!self.runCheck(validator, undefined, undefined, undefined, errors))
           failed = true;

@@ -12,13 +12,26 @@ function ractiveCheckYourself(options) {
           return;
         var obj = {};
         obj[path] = newVal;
-        var result = validator.check(obj, true);
+        var fullObj = ractive.get();
+        var result = validator.check(obj, fullObj);
 
         var errors = _.merge(ractive.get('errors'), result.errors);
         if (!_.find(errors, function (val) { return !!val; }))
           errors = null;
         ractive.set('errors', errors);
       });
+
+      ractive.on('check', function (e, field) {
+        var obj = {};
+        obj[field] = ractive.get(field);
+        var fullObj = ractive.get();
+        var result = validator.check(obj, fullObj);
+
+        var errors = _.merge(ractive.get('errors'), result.errors);
+        if (!_.find(errors, function (val) { return !!val; }))
+          errors = null;
+        ractive.set('errors', errors);
+      })
 
       ractive.on('submit', function (e) {
         var obj = ractive.get();
